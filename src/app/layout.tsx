@@ -10,7 +10,7 @@ import { Toaster } from "sonner";
 export const metadata: Metadata = {
   title: "RepoGPT",
   description: "Analyse your repositories easily.",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  icons: [{ rel: "icon", url: "/logo.png" }],
 };
 
 const geist = Geist({

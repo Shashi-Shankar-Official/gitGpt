@@ -41,7 +41,7 @@ const AppSidebar = () => {
         <Sidebar collapsible="icon" variant="floating">
             <SidebarHeader>
                 <div className="flex items-center gap-2">
-                    <Image src='/logo.jpg' alt="logo" width={40} height={40} className="rounded-xl" />
+                    <Image src='/logo.png' alt="logo" width={40} height={40} className="rounded-xl" />
                     {open && (
                         <h1 className="text-xl font-bold text-primary/80">RepoGPT</h1>
                     )}

@@ -53,15 +53,19 @@ const CreatePage = () => {
     : true;
 
   return (
-    <div className="flex h-full items-center justify-center gap-12">
-      <img src="/logo.jpg" className="h-56 w-auto" />
-      <div>
+    <div className="flex h-full items-center justify-center gap-12 bg-[#191B1E]">
+      <img
+        src="/repoGPT.png"
+        alt="RepoGPT Logo"
+        className="h-56 w-auto animate-bounce rounded-full object-contain"
+      />
+      <div className="">
         <div className="flex flex-col justify-center gap-1">
-          <h1 className="text-2xl font-semibold">
+          <h1 className="text-2xl font-bold text-white">
             Link your GitHub Repository
           </h1>
-          <p className="text-muted-foreground text-sm">
-            Enter your repository's URL to analyse it with RepoGPT
+          <p className="text-muted-foreground text-sm font-semibold">
+            Enter your repository&apos;s URL to analyse it with RepoGPT
           </p>
         </div>
         <div className="h-4"></div>
@@ -110,7 +114,11 @@ const CreatePage = () => {
             <div className="h-4"></div>
             <Button
               type="submit"
-              disabled={createProject.isPending || checkCredits.isPending || !hasEnoughCredits}
+              disabled={
+                createProject.isPending ||
+                checkCredits.isPending ||
+                !hasEnoughCredits
+              }
             >
               {!!checkCredits.data ? "Create Project" : "Check Credits"}
             </Button>

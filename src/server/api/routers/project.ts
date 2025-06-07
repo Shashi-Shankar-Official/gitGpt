@@ -2,8 +2,6 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { pollCommits } from "@/lib/github";
 import { checkCredits, indexGithubRepo } from "@/lib/github-loader";
-import { get } from "http";
-import { github } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 export const projectRouter = createTRPCRouter({
   createProject: protectedProcedure
