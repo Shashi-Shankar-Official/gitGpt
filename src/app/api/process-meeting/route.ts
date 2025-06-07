@@ -10,7 +10,7 @@ const bodyParser = z.object({
   projectId: z.string(),
 });
 
-export const maxDuration = 60; 
+export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   const { userId } = await auth();
