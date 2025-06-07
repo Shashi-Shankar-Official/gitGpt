@@ -59,61 +59,58 @@ const CreatePage = () => {
         alt="RepoGPT Logo"
         className="h-56 w-auto animate-bounce rounded-full object-contain"
       />
-      <div className="">
+      <div className="min-h-[300px] overflow-hidden rounded-2xl bg-white m-10 pt-15 pb-15 px-10 py-10 transition-all duration-500">
         <div className="flex flex-col justify-center gap-1">
-          <h1 className="text-2xl font-bold text-white">
-            Link your GitHub Repository
-          </h1>
+          <h1 className="text-2xl font-bold">Link your GitHub Repository</h1>
           <p className="text-muted-foreground text-sm font-semibold">
             Enter your repository&apos;s URL to analyse it with RepoGPT
           </p>
         </div>
+
         <div className="h-4"></div>
+
         <div>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex flex-col gap-2"
+          >
             <Input
               {...register("projectName", { required: true })}
               required
               placeholder="Project Name"
             />
-            <div className="h-2"></div>
             <Input
               {...register("repoUrl", { required: true })}
               required
               placeholder="GitHub URL"
               type="url"
             />
-            <div className="h-2"></div>
             <Input
               {...register("githubToken")}
               placeholder="GitHub Token (Optional)"
             />
-            {!!checkCredits.data && (
-              <>
-                <div className="mt-4 rounded-md border border-orange-200 bg-orange-50 px-4 py-2 text-orange-700">
-                  <div className="flex items-center gap-2">
-                    <Info className="size-4" />
-                    <p className="text-sm">
-                      {" "}
-                      You will be charged{" "}
-                      <strong>{checkCredits.data?.fileCount} </strong>
-                      credits for this repository
-                    </p>
-                  </div>
-                  <p className="ml-6 text-sm text-blue-600">
-                    {" "}
-                    You have <strong>
-                      {checkCredits.data?.userCredits}
-                    </strong>{" "}
-                    credits remaining
+
+            {/* Conditional expansion */}
+            {checkCredits.data && (
+              <div className="mt-4 rounded-md border border-orange-200 bg-orange-50 px-4 py-2 text-orange-700 transition-all duration-300">
+                <div className="flex items-center gap-2">
+                  <Info className="size-4" />
+                  <p className="text-sm">
+                    You will be charged{" "}
+                    <strong>{checkCredits.data?.fileCount}</strong> credits for
+                    this repository
                   </p>
                 </div>
-              </>
+                <p className="ml-6 text-sm text-blue-600">
+                  You have <strong>{checkCredits.data?.userCredits}</strong>{" "}
+                  credits remaining
+                </p>
+              </div>
             )}
 
-            <div className="h-4"></div>
             <Button
               type="submit"
+              className="mt-4"
               disabled={
                 createProject.isPending ||
                 checkCredits.isPending ||
