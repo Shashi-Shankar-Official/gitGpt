@@ -10,7 +10,7 @@ const bodyParser = z.object({
   projectId: z.string(),
 });
 
-export const maxDuration = 300; // 5 minutes in seconds
+export const runtime = "edge";
 
 export async function POST(req: NextRequest) {
   const { userId } = await auth();
