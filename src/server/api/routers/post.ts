@@ -29,3 +29,5 @@ export const postRouter = createTRPCRouter({
     return post ?? null;
   }),
 });
+
+export type PostRouter = typeof postRouter;

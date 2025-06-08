@@ -57,11 +57,11 @@ const AskQuestionCard = () => {
             <div className="flex items-center gap-2">
               <DialogTitle>
                 <Image
-                  src="/logo.jpg"
+                  src="/logo.png"
                   alt="logo"
                   width={40}
                   height={40}
-                  className="rounded-md"
+                  className="rounded-full"
                 />
               </DialogTitle>
               <Button
