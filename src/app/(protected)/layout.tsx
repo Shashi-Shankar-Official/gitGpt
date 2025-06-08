@@ -9,13 +9,14 @@ type Props = {
 };
 
 const SidebarLayout = async ({ children }: Props) => {
+  const user = await currentUser();
   return (
     <SidebarProvider>
       <AppSidebar />
       <main className="m-2 w-full">
         <div className="border-sidebar-border bg-sidebar flex items-center gap-2 rounded-md border p-2 px-4 shadow">
           {/* <SearchBar /> */}
-          <div className="ml-auto">USER</div>
+          <div className="ml-auto font-bold">{user?.firstName ?? "Guest"}</div>
           <UserButton />
         </div>
         <div className="h-4"></div>
