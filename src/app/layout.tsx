@@ -1,12 +1,11 @@
 import "@/styles/globals.css";
-
 import { type Metadata } from "next";
 import { Geist } from "next/font/google";
-import {ClerkProvider} from "@clerk/nextjs"
+import { ClerkProvider } from "@clerk/nextjs";
 
 import { TRPCReactProvider } from "@/trpc/react";
 import { Toaster } from "sonner";
-
+import { AuthObserver } from "./(protected)/AuthObserver";
 export const metadata: Metadata = {
   title: "RepoGPT",
   description: "Analyse your repositories easily.",
@@ -23,12 +22,14 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ClerkProvider>
-      <html lang="en" className={`${geist.variable}`}>
-        <body>
-          <TRPCReactProvider>{children}</TRPCReactProvider>
-          <Toaster richColors/>
-        </body>
-      </html>
+      <AuthObserver>
+        <html lang="en" className={geist.variable}>
+          <body>
+            <TRPCReactProvider>{children}</TRPCReactProvider>
+            <Toaster richColors />
+          </body>
+        </html>
+      </AuthObserver>
     </ClerkProvider>
   );
 }

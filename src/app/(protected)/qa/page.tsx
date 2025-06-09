@@ -60,21 +60,22 @@ const QAPage = () => {
               </div>
             </SheetTrigger>
 
-            <SheetContent className="sm:max-w-[80vw]">
-              <SheetHeader>
-                <SheetTitle>{question.question}</SheetTitle>
+            <SheetContent className="sm:max-w-3xl p-6 bg-white rounded-xl shadow-lg">
+              <SheetHeader className="pb-4 border-b">
+                <SheetTitle className="text-2xl font-bold text-gray-800">
+                  {question.question}
+                </SheetTitle>
               </SheetHeader>
-              <div className="mt-4 max-h-[70vh] overflow-y-auto">
-                <MDEditor.Markdown
+              <div className="mt-6 max-h-[70vh] overflow-y-auto space-y-6 prose prose-slate dark:prose-invert scrollbar-none">
+                <MDEditor.Markdown className="md-editor-white scrollbar-none max-h-[40vh] max-w-[75vw] scrollbar-none"
                   source={question.answer ?? ""}
-                  className="prose"
                 />
-                <div className="h-4" />
                 <CodeReferences
                   filesReferences={(question.filesReferences ?? []) as any}
                 />
               </div>
             </SheetContent>
+
           </Sheet>
         ))}
       </div>

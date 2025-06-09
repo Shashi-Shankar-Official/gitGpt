@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Presentation, Upload } from 'lucide-react';
@@ -75,10 +75,25 @@ const MeetingCard = () => {
           </div>
         </>
       ) : (
-        <div className="flex flex-col items-center">
-          <CircularProgressbar value={progress} text={`${progress}%`} styles={buildStyles({ pathColor: '#2563eb', textColor: '#2563eb' })} />
-          <p className="mt-2 text-center text-sm text-gray-500">Uploading your Meeting...</p>
+        <div className="flex flex-col items-center justify-center">
+          <div className="w-28 h-28 relative">
+            <CircularProgressbarWithChildren
+              value={progress}
+              styles={buildStyles({
+                pathColor: "#2563eb",
+                trailColor: "#e5e7eb",
+              })}
+            >
+              <div className="absolute inset-0 flex items-center justify-center text-[#2563eb] text-2xl font-medium">
+                {progress}%
+              </div>
+            </CircularProgressbarWithChildren>
+          </div>
+          <p className="mt-2 text-center text-sm text-gray-500">
+            Uploading your Meeting...
+          </p>
         </div>
+
       )}
     </Card>
   );

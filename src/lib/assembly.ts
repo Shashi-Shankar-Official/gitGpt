@@ -13,6 +13,7 @@ function msToTime(ms: number) {
 }
 
 export const processMeeting = async (meetingUrl: string) => {
+  console.log("HEHEHEHHEHEHEHE");
   const transcript = await client.transcripts.transcribe({
     audio: meetingUrl,
     auto_chapters: true,
@@ -26,6 +27,8 @@ export const processMeeting = async (meetingUrl: string) => {
       headline: chapter.headline,
       summary: chapter.summary,
     })) || [];
+
+    console.log(summaries);
 
   if (!transcript.text) throw new Error("No transcript text found");
 

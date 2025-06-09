@@ -25,7 +25,7 @@ const BillingPage = () => {
         <div className="flex items-center gap-2">
           <Info className="size-4" />
           <p className="text-sm">
-            Each credit allows you t0 index 1 file in a repository.
+            Each credit allows you to index 1 file in a repository.
           </p>
         </div>
         <p className="text-sm">

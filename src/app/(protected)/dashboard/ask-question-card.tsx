@@ -18,6 +18,8 @@ import CodeReferences from "./code-references";
 import { api } from "@/trpc/react";
 import { toast } from "sonner";
 import useRefetch from "@/hooks/use-refetch";
+import { Loader2 } from "lucide-react";
+
 
 const AskQuestionCard = () => {
   const { project } = useProject();
@@ -52,7 +54,7 @@ const AskQuestionCard = () => {
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[80vw]">
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[80vw] scrollbar-none">
           <DialogHeader>
             <div className="flex items-center gap-2">
               <DialogTitle>
@@ -91,7 +93,7 @@ const AskQuestionCard = () => {
           </DialogHeader>
           <MDEditor.Markdown
             source={answer}
-            className="md-editor-white scrollbar-none max-h-[40vh] max-w-[70vw]"
+            className="md-editor-white scrollbar-none max-h-[40vh] max-w-[75vw] scrollbar-none"
           />
           <div className="h-4"></div>
           <CodeReferences filesReferences={filesReferences} />
@@ -100,7 +102,7 @@ const AskQuestionCard = () => {
             onClick={() => {
               setOpen(false);
             }}
-            className="max-w-[70vw]"
+            className="max-w-[75vw]"
           >
             Close
           </Button>
@@ -109,6 +111,7 @@ const AskQuestionCard = () => {
       <Card className="relative col-span-3">
         <CardHeader>
           <CardTitle>Ask a question</CardTitle>
+          <p className="text-sm opacity-70">RepoGPT has knowledge of the codebase.</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSubmit}>
@@ -118,8 +121,12 @@ const AskQuestionCard = () => {
               onChange={(e) => setQuestion(e.target.value)}
             />
             <div className="h-4"></div>
-            <Button type="submit" disabled={loading}>
-              Ask RepoGPT!
+            <Button
+              type="submit"
+              disabled={loading}
+            >
+              {loading && <Loader2 className="animate-spin" />}
+              <span>Ask RepoGPT!</span>
             </Button>
           </form>
         </CardContent>

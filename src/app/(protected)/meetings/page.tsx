@@ -4,7 +4,7 @@ import { api } from "@/trpc/react";
 import React from "react";
 import MeetingCard from "../dashboard/meeting-card";
 import Link from "next/link";
-import { Badge } from "lucide-react";
+import { Badge, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import useRefetch from "@/hooks/use-refetch";
@@ -42,10 +42,11 @@ const MeetingsPage = () => {
                   >
                     {meeting.name}
                   </Link>
-                  {meeting.status === "processing" && (
-                    <Badge className="bg-yellow-500 text-white">
-                      Processing...
-                    </Badge>
+                  {meeting.status === "PROCESSING" && (
+                    <div className="ml-1 bg-yellow-100 text-yellow-800 border border-yellow-300 px-3 rounded-full text-sm font-medium shadow-sm">
+                      <div>Processing...</div>
+                    </div>
+
                   )}
                 </div>
               </div>
@@ -57,7 +58,6 @@ const MeetingsPage = () => {
                     day: "numeric",
                   })}
                 </p>
-                <p className="truncate">{meeting.issues.length} issues</p>
               </div>
             </div>
             <div className="flex flex-none items-center gap-x-4">
@@ -77,7 +77,7 @@ const MeetingsPage = () => {
                   },
                 })}
               >
-                Delete Meeting
+                <Trash2 />
               </Button>
             </div>
           </li>

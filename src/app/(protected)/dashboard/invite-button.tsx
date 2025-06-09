@@ -49,7 +49,7 @@ const InviteButton = () => {
       <Button
         onClick={() => setOpen(true)}
         size="sm"
-        className="transition hover:cursor-pointer active:scale-95"
+        className="transition hover:cursor-pointer active:scale-95 bg-gray-50 text-black shadow-md ring-1 ring-gray-200 hover:bg-gray-100"
       >
         Invite Members
       </Button>

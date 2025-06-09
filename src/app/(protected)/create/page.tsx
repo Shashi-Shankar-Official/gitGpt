@@ -7,6 +7,7 @@ import { Info } from "lucide-react";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 type FormInput = {
   repoUrl: string;
@@ -108,17 +109,24 @@ const CreatePage = () => {
               </div>
             )}
 
-            <Button
-              type="submit"
-              className="mt-4"
-              disabled={
-                createProject.isPending ||
-                checkCredits.isPending ||
-                !hasEnoughCredits
-              }
-            >
-              {!!checkCredits.data ? "Create Project" : "Check Credits"}
-            </Button>
+<Button
+  type="submit"
+  className="mt-4 flex items-center justify-center"
+  disabled={
+    createProject.isPending ||
+    checkCredits.isPending ||
+    !hasEnoughCredits
+  }
+>
+  { (createProject.isPending || checkCredits.isPending) ? (
+    <div className="flex items-center space-x-2">
+      <Loader2 className="h-5 w-5 animate-spin" />
+      <span>Loading…</span>
+    </div>
+  ) : (
+    !!checkCredits.data ? "Create Project" : "Check Credits"
+  )}
+</Button>
           </form>
         </div>
       </div>

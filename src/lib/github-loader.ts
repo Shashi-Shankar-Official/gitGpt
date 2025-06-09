@@ -11,6 +11,7 @@ const getFileCount = async (
   octokit: Octokit,
   acc: number = 0,
 ) => {
+  
   const { data } = await octokit.rest.repos.getContent({
     owner: githubOwner,
     repo: githubRepo,
