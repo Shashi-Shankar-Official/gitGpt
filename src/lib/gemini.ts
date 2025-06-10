@@ -3,12 +3,14 @@ import { Document } from '@langchain/core/documents'
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 const model = genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash'
+    model: 'gemini-2.0-flash-lite'
 })
 
 export const aiSummariseCommit = async (diff: string) => {
-    const response = await model.generateContent([
-        `You are an expert programmer and you are trying to summarize a git diff. Reminders about the
+    console.log("CALLING  COMMIT SUMMARIZER");
+    try {
+        const response = await model.generateContent([
+            `You are an expert programmer and you are trying to summarize a git diff. Reminders about the
         git diff format:
         For every file, there are a few lines of metadata like:
         \'\'\'
@@ -35,8 +37,13 @@ export const aiSummariseCommit = async (diff: string) => {
         Do not include parts of the example in your summary. It is given only as an example.
         Please summarize the following diff:
         \n\n${diff}`
-    ])
-    return response.response.text();
+        ])
+        return response.response.text()
+    }
+    catch (err) {
+        console.error("Error while summarising commit:", err);
+        return "";
+    }
 }
 
 export async function summariseCode(doc: Document) {
@@ -50,9 +57,9 @@ export async function summariseCode(doc: Document) {
     `])
         return response.response.text();
     } catch (error) {
+        console.error("Error while summarising commit:", error);
         return "";
     }
-
 }
 
 export async function generateEmbedding(summary: string) {

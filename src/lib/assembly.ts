@@ -13,7 +13,7 @@ function msToTime(ms: number) {
 }
 
 export const processMeeting = async (meetingUrl: string) => {
-  console.log("HEHEHEHHEHEHEHE");
+  // console.log("HEHEHEHHEHEHEHE");
   const transcript = await client.transcripts.transcribe({
     audio: meetingUrl,
     auto_chapters: true,

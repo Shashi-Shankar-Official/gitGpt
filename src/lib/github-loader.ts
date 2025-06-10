@@ -4,64 +4,60 @@ import { generateEmbedding, summariseCode } from "./gemini";
 import { db } from "@/server/db";
 import { Octokit } from "octokit";
 
-const getFileCount = async (
-  path: string,
+export async function getFileCount(
   githubOwner: string,
   githubRepo: string,
-  octokit: Octokit,
-  acc: number = 0,
-) => {
-  
-  const { data } = await octokit.rest.repos.getContent({
+  octokit: Octokit
+): Promise<number> {
+  const { data: repo } = await octokit.rest.repos.get({
     owner: githubOwner,
     repo: githubRepo,
-    path,
+  });
+  const defaultBranch = repo.default_branch;
+
+  const {
+    data: {
+      commit: { sha: treeSha },
+    },
+  } = await octokit.rest.repos.getBranch({
+    owner: githubOwner,
+    repo: githubRepo,
+    branch: defaultBranch,
   });
 
-  if (!Array.isArray(data) && data.type === "file") {
-    return acc + 1;
-  }
+  const { data: treeData } = await octokit.rest.git.getTree({
+    owner: githubOwner,
+    repo: githubRepo,
+    tree_sha: treeSha,
+    recursive: "true",
+  });
 
-  if (Array.isArray(data)) {
-    let fileCount = 0;
-    const directories: string[] = [];
+  const fileCount = treeData.tree.filter((item) => item.type === "blob")
+    .length;
 
-    for (const item of data) {
-      if (item.type === "dir") {
-        directories.push(item.path);
-      } else {
-        fileCount++;
-      }
-    }
+  return fileCount;
+}
 
-    if (directories.length > 0) {
-      const directoryCount = await Promise.all(
-        directories.map((dirPath) =>
-          getFileCount(dirPath, githubOwner, githubRepo, octokit, 0),
-        ),
-      );
-
-      fileCount += directoryCount.reduce((a, b) => a + b, 0);
-    }
-    return acc + fileCount;
-  }
-  return acc;
-};
-
-export const checkCredits = async (githubUrl: string, githubToken?: string) => {
+export const checkCredits = async (
+  githubUrl: string,
+  githubToken?: string
+): Promise<number> => {
   const octokit = new Octokit({
-    auth: githubToken,
+    auth: process.env.GITHUB_TOKEN!,
   });
 
-  const githubOwner = githubUrl.split("/")[3];
-  const githubRepo = githubUrl.split("/")[4];
-
+  const [, , , githubOwner, githubRepo] = githubUrl.split("/");
   if (!githubOwner || !githubRepo) {
     return 0;
   }
 
-  const fileCount = await getFileCount("", githubOwner, githubRepo, octokit, 0);
-  return fileCount;
+  try {
+    const fileCount = await getFileCount(githubOwner, githubRepo, octokit);
+    return fileCount;
+  } catch (err) {
+    console.error("Error counting files:", err);
+    return 0;
+  }
 };
 
 export const loadGithubRepo = async (
@@ -69,7 +65,7 @@ export const loadGithubRepo = async (
   githubToken?: string,
 ) => {
   const loader = new GithubRepoLoader(githubUrl, {
-    accessToken: githubToken || "",
+    accessToken: githubToken || process.env.GITHUB_TOKEN || "",
     branch: "main",
     ignoreFiles: [
       "package-lock.json",
@@ -112,17 +108,25 @@ export const indexGithubRepo = async (
   );
 };
 
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 const generateEmbeddings = async (docs: Document[]) => {
-  return await Promise.all(
-    docs.map(async (doc) => {
+  const results = [];
+
+  for (const doc of docs) {
+    try {
       const summary = await summariseCode(doc);
       const embedding = await generateEmbedding(summary);
-      return {
+      results.push({
         summary,
         embedding,
         sourceCode: JSON.parse(JSON.stringify(doc.pageContent)),
         fileName: doc.metadata.source,
-      };
-    }),
-  );
+      });
+    } catch (err) {
+      console.error(`Failed for ${doc.metadata.source}:`, err);
+    }
+    await delay(2000);
+  }
+
+  return results;
 };
