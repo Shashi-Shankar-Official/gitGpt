@@ -18,7 +18,7 @@ export async function askQuestion(question: string, projectId: string) {
                     SELECT "fileName", "sourceCode", "summary",
                     1 - ("summaryEmbedding" <=> ${vectorQuery}::vector) as similarity
                     FROM "SourceCodeEmbedding"
-                    WHERE 1 - ("summaryEmbedding" <=> ${vectorQuery}::vector) > 0.5
+                    WHERE 1 - ("summaryEmbedding" <=> ${vectorQuery}::vector) > 0.4
                     AND "projectId" = ${projectId}
                     ORDER BY similarity DESC
                     LIMIT 10
@@ -32,10 +32,11 @@ export async function askQuestion(question: string, projectId: string) {
             model: google('gemini-1.5-flash'),
             prompt:
                 `
-                You are an AI code assistant who answers questions about the codebase. Your target
+                You are an AI code assistant who answers questions about the codebase. Assume all queries
+                are somehow related to the codebase. Your target
                 audience is a technical intern who is looking to understand the codebase.
-                AI assistant is a brand mew, powerful, humanlike AI. THe traits of AI  include expert knowledge,
-                helpfulness, cleverness and articulateness
+                AI assistant is a brand mew, powerful, humanlike AI. THe traits of AI include expert knowledge,
+                helpfulness, cleverness and articulateness.
                 AI is well behaved and always friendly, kind and inspiring. He is eager to provide thoughful responses
                 to the user.
                 AI has the sum of all knowledge in their brain and is able to accurately answer nearly any questions about

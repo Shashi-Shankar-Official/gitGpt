@@ -46,28 +46,63 @@ export const aiSummariseCommit = async (diff: string) => {
     }
 }
 
-export async function summariseCode(doc: Document) {
+// export async function summariseCode(doc: Document) {
+//     try {
+//         const code = doc.pageContent.slice(0, 10000);
+//         const response = await model.generateContent([`
+//         You are an intelligent senior software developer who speacializes in onboarding junior software
+//         engineers onto projects. You are explaining the purpose of the 
+//         ${doc.metadata.source} file. Here is the code \n\n ${code} \n \n
+//         Give a to-the-point summary of no more than 200 words of the code above.
+//     `])
+//         return response.response.text();
+//     } catch (error) {
+//         console.error("Error while summarising commit:", error);
+//         return "";
+//     }
+// }
+
+// export async function generateEmbedding(summary: string) {
+//     const model = genAI.getGenerativeModel({
+//         model: "text-embedding-004"
+//     })
+//     const result = await model.embedContent(summary);
+//     const embedding = result.embedding;
+//     return embedding.values
+// }
+
+const DEFAULT_API_KEY = process.env.GEMINI_API_KEY!;
+const defaultClient = new GoogleGenerativeAI(DEFAULT_API_KEY);
+
+export async function summariseCode(doc: Document, client?: GoogleGenerativeAI) {
     try {
+        const usedClient = client ?? defaultClient;
+        const model = usedClient.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
         const code = doc.pageContent.slice(0, 10000);
-        const response = await model.generateContent([`
-        You are an intelligent senior software developer who speacializes in onboarding junior software
-        engineers onto projects. You are onboarding a junior software engineer and explaining to them the
-        purpose of the ${doc.metadata.source} file. Here is the code \n\n ${code} \n \n
-        Give a summary of no more than 100 words of the code above
-    `])
+        const prompt = 
+        `
+            You are an intelligent senior software developer who speacializes in onboarding junior software
+            engineers onto projects. You are explaining the purpose of the 
+            ${doc.metadata.source} file. Here is the code \n\n ${code} \n \n
+            Give a to-the-point summary of no more than 200 words of the code above.
+        `;
+        const response = await model.generateContent([prompt]);
         return response.response.text();
     } catch (error) {
-        console.error("Error while summarising commit:", error);
+        console.error("Error while summarising:", error);
         return "";
     }
 }
 
-export async function generateEmbedding(summary: string) {
-    const model = genAI.getGenerativeModel({
-        model: "text-embedding-004"
-    })
-    const result = await model.embedContent(summary);
-    const embedding = result.embedding;
-    return embedding.values
+export async function generateEmbedding(summary: string, client?: GoogleGenerativeAI) {
+    try {
+        const usedClient = client ?? defaultClient;
+        const model = usedClient.getGenerativeModel({ model: "text-embedding-004" });
+        const result = await model.embedContent(summary);
+        return result.embedding.values;
+    } catch (error) {
+        console.error("Error while embedding:", error);
+        return [];
+    }
 }
 
