@@ -18,7 +18,7 @@ export async function askQuestion(question: string, projectId: string) {
                     SELECT "fileName", "sourceCode", "summary",
                     1 - ("summaryEmbedding" <=> ${vectorQuery}::vector) as similarity
                     FROM "SourceCodeEmbedding"
-                    WHERE 1 - ("summaryEmbedding" <=> ${vectorQuery}::vector) > 0.3
+                    WHERE 1 - ("summaryEmbedding" <=> ${vectorQuery}::vector) > 0.5
                     AND "projectId" = ${projectId}
                     ORDER BY similarity DESC
                     LIMIT 10
