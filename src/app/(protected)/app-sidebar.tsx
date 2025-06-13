@@ -17,33 +17,41 @@ import {
   useSidebar,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { Plus, LucideMenu, LucideChevronLeft, LucideChevronRight, Bot, CreditCard, LayoutDashboard, Presentation } from "lucide-react";
-import { usePathname } from "next/navigation";
+import {
+  Plus,
+  LucideMenu,
+  LucideChevronLeft,
+  LucideChevronRight,
+  Bot,
+  CreditCard,
+  LayoutDashboard,
+  Presentation,
+} from "lucide-react";
+import { redirect, usePathname } from "next/navigation";
 import useProject from "@/hooks/use-project";
 
 const items = [
   {
     title: "Dashboard",
     url: "/dashboard",
-    icon: LayoutDashboard
+    icon: LayoutDashboard,
   },
   {
     title: "Q&A",
     url: "/qa",
-    icon: Bot
+    icon: Bot,
   },
   {
     title: "Meetings",
     url: "/meetings",
-    icon: Presentation
+    icon: Presentation,
   },
   {
     title: "Billing",
     url: "/billing",
-    icon: CreditCard
+    icon: CreditCard,
   },
-]
-
+];
 
 export default function AppSidebar() {
   const pathname = usePathname();
@@ -54,7 +62,7 @@ export default function AppSidebar() {
     <>
       <Sidebar collapsible="icon" variant="floating">
         <SidebarHeader>
-          <div className="relative flex items-center gap-2 w-full">
+          <div className="relative flex w-full items-center gap-2">
             <Image
               src="/logo.png"
               alt="logo"
@@ -64,7 +72,7 @@ export default function AppSidebar() {
             />
 
             {open && (
-              <h1 className="flex-1 text-xl font-bold text-primary/80">
+              <h1 className="text-primary/80 flex-1 text-xl font-bold">
                 RepoGPT
               </h1>
             )}
@@ -79,10 +87,14 @@ export default function AppSidebar() {
                 "hidden md:flex",
                 open
                   ? "ml-auto"
-                  : "absolute left-[130%] top-[120%] -translate-x-1/2 -translate-y-1/2 bg-gray-50 rounded-full shadow-md ring-1 ring-gray-200"
+                  : "absolute top-[120%] left-[130%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gray-50 shadow-md ring-1 ring-gray-200",
               )}
             >
-              {open ? <LucideChevronLeft size={20} /> : <LucideChevronRight size={20} />}
+              {open ? (
+                <LucideChevronLeft size={20} />
+              ) : (
+                <LucideChevronRight size={20} />
+              )}
             </Button>
           </div>
         </SidebarHeader>
@@ -119,19 +131,24 @@ export default function AppSidebar() {
                   <SidebarMenuItem key={idx}>
                     <SidebarMenuButton asChild>
                       <div
-                        className="flex items-center gap-2 overflow-hidden w-full hover:cursor-pointer"
-                        onClick={() => setProjectId(project.id)}
+                        className="flex w-full items-center gap-2 overflow-hidden hover:cursor-pointer"
+                        onClick={() => {
+                          setProjectId(project.id);
+                          redirect("/dashboard");
+                        }}
                       >
                         <div
                           className={cn(
-                            "rounded-sm border w-6 h-6 flex items-center justify-center text-sm shrink-0 text-blue-600",
-                            { "bg-primary text-white": project.id === projectId }
+                            "flex h-6 w-6 shrink-0 items-center justify-center rounded-sm border text-sm text-blue-600",
+                            {
+                              "bg-primary text-white": project.id === projectId,
+                            },
                           )}
                         >
                           {project.name[0]}
                         </div>
                         {open && (
-                          <div className="overflow-x-auto whitespace-nowrap max-w-[80%] scrollbar-none">
+                          <div className="scrollbar-none max-w-[80%] overflow-x-auto whitespace-nowrap">
                             <div className="inline-block">{project.name}</div>
                           </div>
                         )}

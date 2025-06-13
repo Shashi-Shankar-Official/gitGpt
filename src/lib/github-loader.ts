@@ -11,6 +11,11 @@ const API_KEYS = [
   process.env.GEMINI_API_KEY_3!,
   process.env.GEMINI_API_KEY_4!,
   process.env.GEMINI_API_KEY_5!,
+  process.env.GEMINI_API_KEY_6!,
+  process.env.GEMINI_API_KEY_7!,
+  process.env.GEMINI_API_KEY_8!,
+  process.env.GEMINI_API_KEY_9!,
+  process.env.GEMINI_API_KEY_10!,
 ];
 
 export async function getFileCount(
@@ -141,7 +146,7 @@ export const generateEmbeddings = async (docs: Document[]) => {
       console.error(`Failed for ${doc.metadata.source}:`, err);
     }
 
-    await delay(450);
+    await delay(210);
   }
 
   return results;
