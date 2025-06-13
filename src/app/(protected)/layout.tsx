@@ -16,7 +16,6 @@ const SidebarLayout = async ({ children }: Props) => {
       <main className="m-2 w-full">
         <div className="border-sidebar-border bg-sidebar flex items-center gap-2 rounded-md border p-2 px-4 shadow">
 <         SidebarTrigger className="md:hidden" />
-          {/* <SearchBar /> */}
           <div className="ml-auto font-bold">{user?.firstName ?? "Guest"}</div>
           <UserButton />
         </div>
