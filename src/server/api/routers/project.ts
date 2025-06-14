@@ -3,6 +3,8 @@ import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { pollCommits } from "@/lib/github";
 import { checkCredits, indexGithubRepo } from "@/lib/github-loader";
 
+const baseUrl = process.env.BACKEND_URL || 'http://localhost:4000';
+
 export const projectRouter = createTRPCRouter({
   createProject: protectedProcedure
     .input(
@@ -14,47 +16,41 @@ export const projectRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const user = await ctx.db.user.findUnique({
-        where: {
-          id: ctx.user.userId!,
-        },
-        select: {
-          credits: true,
-        },
+        where: { id: ctx.user.userId! },
+        select: { credits: true },
       });
-
-      if (!user) {
-        throw new Error("User not found");
-      }
+      if (!user) throw new Error("User not found");
 
       const currentCredits = user.credits || 0;
       const fileCount = await checkCredits(input.githubUrl, input.githubToken);
-      if (fileCount > currentCredits) {
-        throw new Error("Insufficient credits");
-      }
+      if (fileCount > currentCredits) throw new Error("Insufficient credits");
 
       const project = await ctx.db.project.create({
         data: {
           githubUrl: input.githubUrl,
           name: input.name,
           userToProjects: {
-            create: {
-              userId: ctx.user.userId!,
-            },
+            create: { userId: ctx.user.userId! },
           },
         },
       });
       await pollCommits(project.id);
-      await indexGithubRepo(project.id, input.githubUrl, input.githubToken);
+      void fetch(`${baseUrl}/index`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectId: project.id,
+          githubUrl: input.githubUrl,
+          githubToken: input.githubToken,
+        }),
+      }).catch(console.error);
       await ctx.db.user.update({
-        where: {
-          id: ctx.user.userId!,
-        },
-        data: {
-          credits: { decrement: fileCount },
-        },
+        where: { id: ctx.user.userId! },
+        data: { credits: { decrement: fileCount } },
       });
       return project;
     }),
+
   getProjects: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.db.project.findMany({
       where: {

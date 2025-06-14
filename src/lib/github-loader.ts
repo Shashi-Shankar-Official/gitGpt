@@ -133,6 +133,7 @@ export const generateEmbeddings = async (docs: Document[]) => {
     const doc = docs[i];
     if (!doc) continue;
     try {
+      console.log("Sending a file...")
       const summary = await summariseCode(doc, client);
       const embedding = await generateEmbedding(summary, client);
 
