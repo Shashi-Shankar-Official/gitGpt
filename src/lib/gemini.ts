@@ -6,7 +6,16 @@ const model = genAI.getGenerativeModel({
     model: 'gemini-2.0-flash-lite'
 })
 
-export const aiSummariseCommit = async (diff: string) => {
+
+const DEFAULT_API_KEY = process.env.GEMINI_API_KEY!;
+const defaultClient = new GoogleGenerativeAI(DEFAULT_API_KEY);
+
+export const aiSummariseCommit = async (
+    diff: string,
+    client?: GoogleGenerativeAI
+) => {
+    const usedClient = client ?? defaultClient;
+    const model = usedClient.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
     console.log("CALLING  COMMIT SUMMARIZER");
     try {
         const response = await model.generateContent([
@@ -71,16 +80,14 @@ export const aiSummariseCommit = async (diff: string) => {
 //     return embedding.values
 // }
 
-const DEFAULT_API_KEY = process.env.GEMINI_API_KEY!;
-const defaultClient = new GoogleGenerativeAI(DEFAULT_API_KEY);
 
 export async function summariseCode(doc: Document, client?: GoogleGenerativeAI) {
     try {
         const usedClient = client ?? defaultClient;
         const model = usedClient.getGenerativeModel({ model: "gemini-2.0-flash-lite" });
         const code = doc.pageContent.slice(0, 10000);
-        const prompt = 
-        `
+        const prompt =
+            `
             You are an intelligent senior software developer who speacializes in onboarding junior software
             engineers onto projects. You are explaining the purpose of the 
             ${doc.metadata.source} file. Here is the code \n\n ${code} \n \n

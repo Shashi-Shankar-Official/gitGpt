@@ -2,6 +2,7 @@ import { db } from '@/server/db';
 import { Octokit } from 'octokit'
 import axios from 'axios'
 import { aiSummariseCommit } from './gemini';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 
 export const octokit = new Octokit({
@@ -16,6 +17,19 @@ type Response = {
     commitAuthorAvatar: string;
     commitDate: string;
 }
+
+const API_KEYS = [
+    process.env.GEMINI_API_KEY!,
+    process.env.GEMINI_API_KEY_2!,
+    process.env.GEMINI_API_KEY_3!,
+    process.env.GEMINI_API_KEY_4!,
+    process.env.GEMINI_API_KEY_5!,
+    process.env.GEMINI_API_KEY_6!,
+    process.env.GEMINI_API_KEY_7!,
+    process.env.GEMINI_API_KEY_8!,
+    process.env.GEMINI_API_KEY_9!,
+    process.env.GEMINI_API_KEY_10!,
+];
 
 export const getCommitHashes = async (githubUrl: string): Promise<Response[]> => {
     const [owner, repo] = githubUrl.split('/').slice(-2);
@@ -37,9 +51,10 @@ export const getCommitHashes = async (githubUrl: string): Promise<Response[]> =>
 }
 
 const MAX_COMMITS = 10;
-const DELAY_MS = 2000;
+const DELAY_MS = 200;
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
+const genAIClients = API_KEYS.map((key) => new GoogleGenerativeAI(key));
 
 export const pollCommits = async (projectId: string) => {
     const { project, githubUrl } = await fetchProjectGithubUrl(projectId);
@@ -49,10 +64,13 @@ export const pollCommits = async (projectId: string) => {
     const toProcess = unprocessedCommits.slice(0, MAX_COMMITS);
 
     const summaries: string[] = [];
-    for (const commit of toProcess) {
+    for (let i = 0; i < toProcess.length; i++) {
+        const commit = toProcess[i];
+        const client = genAIClients[i % genAIClients.length];
+        if (!commit || !client) continue;
         try {
             console.log(`Summarizing commit`);
-            const summary = await summariseCommit(githubUrl, commit.commitHash);
+            const summary = await summariseCommit(githubUrl, commit.commitHash, client);
             summaries.push(summary);
         } catch (err) {
             console.error(`Failed to summarise`, err);
@@ -77,14 +95,17 @@ export const pollCommits = async (projectId: string) => {
 
 async function summariseCommit(
     githubUrl: string,
-    commitHash: string
+    commitHash: string,
+    client: GoogleGenerativeAI
 ): Promise<string> {
     const { data: diff } = await axios.get(
         `${githubUrl}/commit/${commitHash}.diff`,
         { headers: { Accept: "application/vnd.github.v3.diff" } }
     );
-    return (await aiSummariseCommit(diff)) || "";
+
+    return (await aiSummariseCommit(diff, client)) || "";
 }
+
 
 
 async function fetchProjectGithubUrl(projectId: string) {
